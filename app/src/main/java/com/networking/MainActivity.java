@@ -148,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void cancelAllRequests(View view) {
+        Log.d(TAG, "isRequestRunning before cancel : " + AndroidNetworking.isRequestRunning(this));
         AndroidNetworking.cancel(this);
+        Log.d(TAG, "isRequestRunning after cancel : " + AndroidNetworking.isRequestRunning(this));
     }
 
     public void loadImageDirect(View view) {
@@ -211,4 +213,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, OkHttpResponseTestActivity.class));
     }
 
+    public void startWebSocketActivity(View view) {
+        startActivity(new Intent(MainActivity.this, WebSocketActivity.class));
+    }
 }

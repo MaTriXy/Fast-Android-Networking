@@ -1,10 +1,15 @@
+<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Fast-Android-Networking/master/assets/androidnetworking.png >
+
 # Fast Android Networking Library
 
 [![Build Status](https://travis-ci.org/amitshekhariitbhu/Fast-Android-Networking.svg?branch=master)](https://travis-ci.org/amitshekhariitbhu/Fast-Android-Networking)
+[![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
+[![Mindorks Community](https://img.shields.io/badge/join-community-blue.svg)](https://mindorks.com/join-community)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20Networking-blue.svg?style=flat)](http://android-arsenal.com/details/1/3695)
+[![API](https://img.shields.io/badge/API-9%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=9)
+[![Download](https://api.bintray.com/packages/amitshekhariitbhu/maven/android-networking/images/download.svg) ](https://bintray.com/amitshekhariitbhu/maven/android-networking/_latestVersion)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://opensource.org/licenses/Apache-2.0)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/amitshekhariitbhu/Fast-Android-Networking/blob/master/LICENSE)
-
-<img src=https://raw.githubusercontent.com/amitshekhariitbhu/Fast-Android-Networking/master/assets/androidnetworking.png >
 
 ### About Fast Android Networking Library
 
@@ -21,6 +26,17 @@ Fast Android Networking Library takes care of each and everything. So you don't 
   [Okio](https://github.com/square/okio) is made to handle GC overhead while allocating memory.
   [Okio](https://github.com/square/okio) do some clever things to save CPU and memory.
 * As it uses [OkHttp](http://square.github.io/okhttp/) , most important it supports HTTP/2.  
+
+
+### RxJava2 Support, [check here](https://amitshekhariitbhu.github.io/Fast-Android-Networking/rxjava2_support.html).
+
+### RxJava2 + Fast Android Networking + Dagger2 with MVP Architecture Project, [Check here](https://github.com/MindorksOpenSource/android-mvp-architecture)
+
+### Another awesome library for debugging databases and shared preferences, [Check here](https://github.com/amitshekhariitbhu/Android-Debug-Database)
+
+### RxJava2 + Fast Android Networking + Dagger2 with MVVM Architecture Project, [Check here](https://github.com/MindorksOpenSource/android-mvvm-architecture)
+
+### PRDownloader library for downloading file with pause and resume support, [Check here](https://github.com/MindorksOpenSource/PRDownloader)
 
 ### Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
@@ -39,7 +55,7 @@ Fast Android Networking Library supports Android 2.3 (Gingerbread) and later.
 
 Add this in your build.gradle
 ```groovy
-compile 'com.amitshekhar.android:android-networking:0.3.0'
+compile 'com.amitshekhar.android:android-networking:1.0.1'
 ```
 Do not forget to add internet permission in manifest if already not present
 ```xml
@@ -59,7 +75,7 @@ AndroidNetworking.initialize(getApplicationContext(),okHttpClient);
 ```
 Using the Fast Android Networking with Jackson Parser
 ```groovy
-compile 'com.amitshekhar.android:jackson-android-networking:0.3.0'
+compile 'com.amitshekhar.android:jackson-android-networking:1.0.1'
 ```
 ```java
 // Then set the JacksonParserFactory like below
@@ -105,13 +121,33 @@ AndroidNetworking.post("https://fierce-cove-29863.herokuapp.com/createAnUser")
                     }
                 });
 ```
-You can also post json, file, etc in POST request like this.
+You can also post java object, json, file, etc in POST request like this.
 ```java
+User user = new User();
+user.firstname = "Amit";
+user.lastname = "Shekhar";
+
+AndroidNetworking.post("https://fierce-cove-29863.herokuapp.com/createUser")
+                 .addBodyParameter(user) // posting java object
+                 .setTag("test")
+                 .setPriority(Priority.MEDIUM)
+                 .build()
+                 .getAsJSONArray(new JSONArrayRequestListener() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                      // do anything with response
+                    }
+                    @Override
+                    public void onError(ANError error) {
+                      // handle error
+                    }
+                });
+
 
 JSONObject jsonObject = new JSONObject();
 try {
-    jsonObject.put("firstname", "Rohit");
-    jsonObject.put("lastname", "Kumar");
+    jsonObject.put("firstname", "Amit");
+    jsonObject.put("lastname", "Shekhar");
 } catch (JSONException e) {
   e.printStackTrace();
 }
@@ -158,7 +194,7 @@ AndroidNetworking.get("https://fierce-cove-29863.herokuapp.com/getAllUsers/{page
                 .setTag(this)
                 .setPriority(Priority.LOW)
                 .build()
-                .getAsParsed(new TypeToken<List<User>>() {}, new ParsedRequestListener<List<User>>() {
+                .getAsObjectList(User.class, new ParsedRequestListener<List<User>>() {
                     @Override
                     public void onResponse(List<User> users) {
                       // do anything with response
@@ -180,7 +216,7 @@ AndroidNetworking.get("https://fierce-cove-29863.herokuapp.com/getAnUserDetail/{
                 .setTag(this)
                 .setPriority(Priority.LOW)
                 .build()
-                .getAsParsed(new TypeToken<User>() {}, new ParsedRequestListener<User>() {
+                .getAsObject(User.class, new ParsedRequestListener<User>() {
                      @Override
                      public void onResponse(User user) {
                         // do anything with response
@@ -193,7 +229,7 @@ AndroidNetworking.get("https://fierce-cove-29863.herokuapp.com/getAnUserDetail/{
                         // handle error
                      }
                  }); 
-/*-- Note : TypeToken and getAsParsed is important here --*/              
+/*-- Note : YourObject.class, getAsObject and getAsObjectList are important here --*/              
 ```
 
 ### Downloading a file from server
@@ -342,19 +378,21 @@ AndroidNetworking.get(imageUrl)
 ### Error Code Handling
 ```java
 public void onError(ANError error) {
-                           if (error.getErrorCode() != 0) {
-                                // received error from server
-                                // error.getErrorCode() - the error code from server
-                                // error.getErrorBody() - the error body from server
-                                // error.getErrorDetail() - just an error detail
-                                Log.d(TAG, "onError errorCode : " + error.getErrorCode());
-                                Log.d(TAG, "onError errorBody : " + error.getErrorBody());
-                                Log.d(TAG, "onError errorDetail : " + error.getErrorDetail());
-                           } else {
-                                // error.getErrorDetail() : connectionError, parseError, requestCancelledError
-                                Log.d(TAG, "onError errorDetail : " + error.getErrorDetail());
-                           }
-                        }
+   if (error.getErrorCode() != 0) {
+        // received error from server
+        // error.getErrorCode() - the error code from server
+        // error.getErrorBody() - the error body from server
+        // error.getErrorDetail() - just an error detail
+        Log.d(TAG, "onError errorCode : " + error.getErrorCode());
+        Log.d(TAG, "onError errorBody : " + error.getErrorBody());
+        Log.d(TAG, "onError errorDetail : " + error.getErrorDetail());
+        // get parsed error object (If ApiError is your class)
+        ApiError apiError = error.getErrorAsObject(ApiError.class);
+   } else {
+        // error.getErrorDetail() : connectionError, parseError, requestCancelledError
+        Log.d(TAG, "onError errorDetail : " + error.getErrorDetail());
+   }
+}
 ```
 ### Remove Bitmap from cache or clear cache
 ```java
@@ -505,7 +543,7 @@ ANRequest request = AndroidNetworking.get("https://fierce-cove-29863.herokuapp.c
                         .addPathParameter("pageNumber", "0")
                         .addQueryParameter("limit", "3")
                         .build();
-ANResponse<List<User>> response = request.executeForParsed(new TypeToken<List<User>>() {});
+ANResponse<List<User>> response = request.executeForObjectList(User.class);
 if (response.isSuccess()) {
    List<User> users = responseTwo.getResult();
 } else {
@@ -526,8 +564,7 @@ if (response.isSuccess()) {
 ### Enabling Logging
 ```java
 AndroidNetworking.enableLogging(); // simply enable logging
-AndroidNetworking.enableLogging("tag"); // enabling logging with some tag
-AndroidNetworking.disableLogging(); // disable logging
+AndroidNetworking.enableLogging(LEVEL.HEADERS); // enabling logging with level
 ```
 ### Enabling GZIP From Client to Server
 ```java
@@ -545,7 +582,7 @@ AndroidNetworking.initialize(getApplicationContext(),okHttpClient);
 * Known Bug : As present if you are using GZIP Interceptor from client to server, Upload progress
   is not working perfectly in Multipart.
   
-  If you are using proguard, then add this rule in proguard-project.txt
+  If you are using Proguard with Gradle build system (which is usually the case), you don't have to do anything. The appropriate Proguard rules will be automatically applied. If you still need the rules applied in `proguard-rules.pro`, it is as follows:
   ```
   -dontwarn okio.**
   ```
@@ -558,7 +595,7 @@ AndroidNetworking.initialize(getApplicationContext(),okHttpClient);
 * Fast Android Networking Library supports uploading any type of file (supports multipart upload)
 * Fast Android Networking Library supports cancelling a request
 * Fast Android Networking Library supports setting priority to any request (LOW, MEDIUM, HIGH, IMMEDIATE)
-* Fast Android Networking Library supports [RxJava](https://github.com/amitshekhariitbhu/Fast-Android-Networking/blob/master/RxAndroidNetworking.md)
+* Fast Android Networking Library supports [RxJava](https://amitshekhariitbhu.github.io/Fast-Android-Networking/rxjava2_support.html)
 
 As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it supports:
 
@@ -568,20 +605,20 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 * Fast Android Networking Library supports response caching which avoids the network completely for repeat requests
 
 ### Difference over other Networking Library
-* In Fast Android Networking Library, OkHttpClient can be customized for every request easily.
+* In Fast Android Networking Library, OkHttpClient can be customized for every request easily — like timeout customization, etc. for each request.
 * As Fast Android Networking Library uses [OkHttp](http://square.github.io/okhttp/) and [Okio](https://github.com/square/okio), it is faster.
 * Single library for all type of networking.
-* Supports RxJava -> [Check here](https://github.com/amitshekhariitbhu/Fast-Android-Networking/wiki/Using-Fast-Android-Networking-Library-With-RxJava)
+* Supports RxJava, RxJava2 -> [Check here](https://amitshekhariitbhu.github.io/Fast-Android-Networking/rxjava2_support.html)
 * Current bandwidth and connection quality can be obtained to decide logic of code.
 * Executor can be passed to any request to get response in another thread.
 * Complete analytics of any request can be obtained.
 * All types of customization is possible.
-* Immediate Request is really immediate now.
-* Prefetching of any request can be done so that it gives instant data when required from cache.
-* Proper cancellation of request.
-* Do not cancel a request if completed more than a threshold percentage.
-* Simple interface to make any type of request.
-* Proper Response Caching, hence reducing bandwidth usage.  
+* Immediate Request really is immediate now.
+* Prefetching of any request can be done so that it gives instant data when required from the cache.
+* Proper request canceling.
+* Prevents cancellation of a request if it’s completed more than a specific threshold percentage.
+* A simple interface to make any type of request.
+* Proper Response Caching — which leads to reduced bandwidth usage. 
 
 ### TODO
 * Integration with other library
@@ -591,7 +628,9 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 * [Square](https://square.github.io/) - As both [OkHttp](http://square.github.io/okhttp/) and [Okio](https://github.com/square/okio)
   used by Fast Android Networking is developed by [Square](https://square.github.io/).
 * [Volley](https://android.googlesource.com/platform/frameworks/volley/) - As Fast Android Networking uses ImageLoader that is developed by [Volley](https://android.googlesource.com/platform/frameworks/volley/).  
-* [Prashant Gupta](https://github.com/PrashantGupta17) - For RxJava Support - [RxJava Support](https://github.com/amitshekhariitbhu/Fast-Android-Networking/wiki/Using-Fast-Android-Networking-Library-With-RxJava)
+* [Prashant Gupta](https://github.com/PrashantGupta17) - For RxJava, RxJava2 Support - [RxJava Support](https://github.com/amitshekhariitbhu/Fast-Android-Networking/wiki/Using-Fast-Android-Networking-Library-With-RxJava)
+
+### [Check out Mindorks awesome open source projects here](https://mindorks.com/open-source-projects)
 
 ### Contact - Let's become friend
 - [Twitter](https://twitter.com/amitiitbhu)
@@ -618,5 +657,6 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 ```
 
 ### Contributing to Fast Android Networking
-Just make pull request. You are in!
+All pull requests are welcome, make sure to follow the [contribution guidelines](CONTRIBUTING.md)
+when you submit pull request.
 

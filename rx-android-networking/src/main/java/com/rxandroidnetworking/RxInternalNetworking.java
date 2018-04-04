@@ -19,7 +19,6 @@ package com.rxandroidnetworking;
 import android.net.TrafficStats;
 
 import com.androidnetworking.common.ANConstants;
-import com.androidnetworking.common.ANLog;
 import com.androidnetworking.common.ANResponse;
 import com.androidnetworking.common.ConnectionClassManager;
 import com.androidnetworking.common.RequestType;
@@ -49,6 +48,7 @@ import rx.exceptions.Exceptions;
 import static com.androidnetworking.common.Method.DELETE;
 import static com.androidnetworking.common.Method.GET;
 import static com.androidnetworking.common.Method.HEAD;
+import static com.androidnetworking.common.Method.OPTIONS;
 import static com.androidnetworking.common.Method.PATCH;
 import static com.androidnetworking.common.Method.POST;
 import static com.androidnetworking.common.Method.PUT;
@@ -88,6 +88,10 @@ public class RxInternalNetworking {
                 builder = builder.head();
                 break;
             }
+            case OPTIONS: {
+                builder = builder.method(ANConstants.OPTIONS, null);
+                break;
+            }
             case PATCH: {
                 requestBody = request.getRequestBody();
                 builder = builder.patch(requestBody);
@@ -108,7 +112,6 @@ public class RxInternalNetworking {
         } else {
             request.setCall(InternalNetworking.sHttpClient.newCall(okHttpRequest));
         }
-        ANLog.d("call generated successfully for simple observable");
         return Observable.create(new ANOnSubscribe<T>(request));
     }
 
@@ -210,7 +213,6 @@ public class RxInternalNetworking {
             if (!compareAndSet(false, true)) return; // Request was already triggered.
             Response okHttpResponse = null;
             try {
-                ANLog.d("initiate simple network call observable");
                 final long startTime = System.currentTimeMillis();
                 final long startBytes = TrafficStats.getTotalRxBytes();
                 okHttpResponse = call.execute();
@@ -238,11 +240,8 @@ public class RxInternalNetworking {
                                         request.getRequestBody().contentLength() : -1, 0, true);
                     }
                 }
-                if (okHttpResponse.code() == 304) {
-                    ANLog.d("error code 304 simple observable");
-                } else if (okHttpResponse.code() >= 400) {
+                if (okHttpResponse.code() >= 400) {
                     if (!subscriber.isUnsubscribed()) {
-                        ANLog.d("delivering error to subscriber from simple observable");
                         subscriber.onError(Utils.getErrorForServerResponse(new ANError(okHttpResponse),
                                 request, okHttpResponse.code()));
                     }
@@ -250,30 +249,25 @@ public class RxInternalNetworking {
                     ANResponse<T> response = request.parseResponse(okHttpResponse);
                     if (!response.isSuccess()) {
                         if (!subscriber.isUnsubscribed()) {
-                            ANLog.d("delivering error to subscriber from simple observable");
                             subscriber.onError(response.getError());
                         }
                     } else {
                         if (!subscriber.isUnsubscribed()) {
-                            ANLog.d("delivering response to subscriber from simple observable");
                             subscriber.onNext(response.getResult());
                         }
                         if (!subscriber.isUnsubscribed()) {
-                            ANLog.d("delivering completion to subscriber from simple observable");
                             subscriber.onCompleted();
                         }
                     }
                 }
             } catch (IOException ioe) {
                 if (!subscriber.isUnsubscribed()) {
-                    ANLog.d("delivering error to subscriber from simple observable");
                     subscriber.onError(Utils.getErrorForConnection(new ANError(ioe)));
                 }
             } catch (Exception e) {
                 Exceptions.throwIfFatal(e);
                 if (!subscriber.isUnsubscribed()) {
-                    ANLog.d("delivering error to subscriber from simple observable");
-                    subscriber.onError(Utils.getErrorForNetworkOnMainThreadOrConnection(e));
+                    subscriber.onError(Utils.getErrorForConnection(new ANError(e)));
                 }
             } finally {
                 SourceCloseUtil.close(okHttpResponse, request);
@@ -282,7 +276,6 @@ public class RxInternalNetworking {
 
         @Override
         public void unsubscribe() {
-            ANLog.d("unsubscribed from simple observable");
             call.cancel();
         }
 
@@ -310,7 +303,6 @@ public class RxInternalNetworking {
             if (!compareAndSet(false, true)) return; // Request was already triggered.
             Response okHttpResponse;
             try {
-                ANLog.d("initiate download network call observable");
                 final long startTime = System.currentTimeMillis();
                 final long startBytes = TrafficStats.getTotalRxBytes();
                 okHttpResponse = request.getCall().execute();
@@ -360,7 +352,7 @@ public class RxInternalNetworking {
             } catch (Exception e) {
                 Exceptions.throwIfFatal(e);
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onError(Utils.getErrorForNetworkOnMainThreadOrConnection(e));
+                    subscriber.onError(Utils.getErrorForConnection(new ANError(e)));
                 }
             }
         }
@@ -455,7 +447,7 @@ public class RxInternalNetworking {
             } catch (Exception e) {
                 Exceptions.throwIfFatal(e);
                 if (!subscriber.isUnsubscribed()) {
-                    subscriber.onError(Utils.getErrorForNetworkOnMainThreadOrConnection(e));
+                    subscriber.onError(Utils.getErrorForConnection(new ANError(e)));
                 }
             } finally {
                 SourceCloseUtil.close(okHttpResponse, request);

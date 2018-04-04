@@ -37,7 +37,6 @@ import com.androidnetworking.interfaces.JSONObjectRequestListener;
 import com.androidnetworking.interfaces.OkHttpResponseListener;
 import com.androidnetworking.interfaces.ParsedRequestListener;
 import com.androidnetworking.interfaces.UploadProgressListener;
-import com.google.gson.reflect.TypeToken;
 import com.networking.model.User;
 import com.networking.utils.Utils;
 
@@ -120,8 +119,7 @@ public class ApiTestActivity extends AppCompatActivity {
                         Log.d(TAG, " isFromCache : " + isFromCache);
                     }
                 })
-                .getAsParsed(new TypeToken<List<User>>() {
-                }, new ParsedRequestListener<List<User>>() {
+                .getAsObjectList(User.class, new ParsedRequestListener<List<User>>() {
                     @Override
                     public void onResponse(List<User> users) {
                         Log.d(TAG, "userList size : " + users.size());
@@ -155,8 +153,7 @@ public class ApiTestActivity extends AppCompatActivity {
                         Log.d(TAG, " isFromCache : " + isFromCache);
                     }
                 })
-                .getAsParsed(new TypeToken<User>() {
-                }, new ParsedRequestListener<User>() {
+                .getAsObject(User.class, new ParsedRequestListener<User>() {
                     @Override
                     public void onResponse(User user) {
                         Log.d(TAG, "id : " + user.id);
@@ -1015,8 +1012,7 @@ public class ApiTestActivity extends AppCompatActivity {
                                 Log.d(TAG, " isFromCache : " + isFromCache);
                             }
                         });
-                ANResponse<List<User>> responseTwo = requestTwo.executeForParsed(new TypeToken<List<User>>() {
-                });
+                ANResponse<List<User>> responseTwo = requestTwo.executeForObjectList(User.class);
 
                 if (responseTwo.isSuccess()) {
                     Log.d(TAG, "checkSynchronousCall : response success");
@@ -1109,6 +1105,22 @@ public class ApiTestActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    public void checkOptionsRequest(View view) {
+        AndroidNetworking.options("https://api.github.com/square/okhttp/issues")
+                .build()
+                .getAsOkHttpResponse(new OkHttpResponseListener() {
+                    @Override
+                    public void onResponse(Response response) {
+                        Log.d(TAG, "response : " + response.headers().toString());
+                    }
+
+                    @Override
+                    public void onError(ANError anError) {
+                        Utils.logError(TAG, anError);
+                    }
+                });
     }
 
     public void getCurrentConnectionQuality(View view) {

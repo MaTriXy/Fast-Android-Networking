@@ -20,8 +20,6 @@ package com.androidnetworking.utils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.os.NetworkOnMainThreadException;
 import android.widget.ImageView;
 
 import com.androidnetworking.common.ANConstants;
@@ -64,9 +62,16 @@ public class Utils {
         return contentTypeFor;
     }
 
+    public static ANResponse<Bitmap> decodeBitmap(Response response, int maxWidth,
+                                                  int maxHeight, Bitmap.Config decodeConfig,
+                                                  ImageView.ScaleType scaleType) {
+        return decodeBitmap(response, maxWidth, maxHeight, decodeConfig,
+                new BitmapFactory.Options(), scaleType);
+    }
 
     public static ANResponse<Bitmap> decodeBitmap(Response response, int maxWidth,
                                                   int maxHeight, Bitmap.Config decodeConfig,
+                                                  BitmapFactory.Options decodeOptions,
                                                   ImageView.ScaleType scaleType) {
         byte[] data = new byte[0];
         try {
@@ -74,7 +79,6 @@ public class Utils {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        BitmapFactory.Options decodeOptions = new BitmapFactory.Options();
         Bitmap bitmap = null;
         if (maxWidth == 0 && maxHeight == 0) {
             decodeOptions.inPreferredConfig = decodeConfig;
@@ -231,15 +235,4 @@ public class Utils {
         return error;
     }
 
-    public static ANError getErrorForNetworkOnMainThreadOrConnection(Exception e) {
-        ANError error = new ANError(e);
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB
-                && e instanceof NetworkOnMainThreadException) {
-            error.setErrorDetail(ANConstants.NETWORK_ON_MAIN_THREAD_ERROR);
-        } else {
-            error.setErrorDetail(ANConstants.CONNECTION_ERROR);
-        }
-        error.setErrorCode(0);
-        return error;
-    }
 }

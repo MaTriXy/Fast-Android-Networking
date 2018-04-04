@@ -17,7 +17,6 @@
 
 package com.androidnetworking.internal;
 
-import com.androidnetworking.common.ANLog;
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.ANResponse;
 import com.androidnetworking.common.Priority;
@@ -50,7 +49,7 @@ public class InternalRunnable implements Runnable {
 
     @Override
     public void run() {
-        ANLog.d("execution started : " + request.toString());
+        request.setRunning(true);
         switch (request.getRequestType()) {
             case SIMPLE:
                 executeSimpleRequest();
@@ -62,7 +61,7 @@ public class InternalRunnable implements Runnable {
                 executeUploadRequest();
                 break;
         }
-        ANLog.d("execution done : " + request.toString());
+        request.setRunning(false);
     }
 
     private void executeSimpleRequest() {

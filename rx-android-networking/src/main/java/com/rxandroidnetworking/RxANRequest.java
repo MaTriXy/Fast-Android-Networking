@@ -21,18 +21,24 @@ import android.graphics.Bitmap;
 
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.Method;
-import com.androidnetworking.common.ResponseType;
 import com.androidnetworking.common.RequestType;
+import com.androidnetworking.common.ResponseType;
+import com.google.gson.internal.$Gson$Types;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.List;
+
+import rx.Completable;
 import rx.Observable;
+import rx.Single;
 
 /**
  * Created by amitshekhar on 10/06/16.
  */
+@SuppressWarnings({"unchecked", "unused"})
 public class RxANRequest extends ANRequest<RxANRequest> {
 
     public RxANRequest(GetRequestBuilder builder) {
@@ -62,6 +68,14 @@ public class RxANRequest extends ANRequest<RxANRequest> {
         }
     }
 
+    public Single<JSONObject> getJSONObjectSingle() {
+        return getJSONObjectObservable().toSingle();
+    }
+
+    public Completable getJSONObjectCompletable() {
+        return getJSONObjectObservable().toCompletable();
+    }
+
     public Observable<JSONArray> getJSONArrayObservable() {
         this.setResponseAs(ResponseType.JSON_ARRAY);
         if (this.getRequestType() == RequestType.SIMPLE) {
@@ -71,6 +85,14 @@ public class RxANRequest extends ANRequest<RxANRequest> {
         } else {
             return null;
         }
+    }
+
+    public Single<JSONArray> getJSONArraySingle() {
+        return getJSONArrayObservable().toSingle();
+    }
+
+    public Completable getJSONArrayCompletable() {
+        return getJSONArrayObservable().toCompletable();
     }
 
     public Observable<Bitmap> getBitmapObservable() {
@@ -84,6 +106,14 @@ public class RxANRequest extends ANRequest<RxANRequest> {
         }
     }
 
+    public Single<Bitmap> getBitmapSingle() {
+        return getBitmapObservable().toSingle();
+    }
+
+    public Completable getBitmapCompletable() {
+        return getBitmapObservable().toCompletable();
+    }
+
     public Observable<String> getStringObservable() {
         this.setResponseAs(ResponseType.STRING);
         if (this.getRequestType() == RequestType.SIMPLE) {
@@ -95,8 +125,24 @@ public class RxANRequest extends ANRequest<RxANRequest> {
         }
     }
 
+    public Single<String> getStringSingle() {
+        return getStringObservable().toSingle();
+    }
+
+    public Completable getStringCompletable() {
+        return getStringObservable().toCompletable();
+    }
+
     public Observable<String> getDownloadObservable() {
         return RxInternalNetworking.generateDownloadObservable(this);
+    }
+
+    public Single<String> getDownloadSingle() {
+        return getDownloadObservable().toSingle();
+    }
+
+    public Completable getDownloadCompletable() {
+        return getDownloadObservable().toCompletable();
     }
 
     public <T> Observable<T> getParseObservable(TypeToken<T> typeToken) {
@@ -109,6 +155,54 @@ public class RxANRequest extends ANRequest<RxANRequest> {
         } else {
             return null;
         }
+    }
+
+    public <T> Single<T> getParseSingle(TypeToken<T> typeToken) {
+        return getParseObservable(typeToken).toSingle();
+    }
+
+    public <T> Completable getParseCompletable(TypeToken<T> typeToken) {
+        return getParseObservable(typeToken).toCompletable();
+    }
+
+    public <T> Observable<T> getObjectObservable(Class<T> objectClass) {
+        this.setType(objectClass);
+        this.setResponseAs(ResponseType.PARSED);
+        if (this.getRequestType() == RequestType.SIMPLE) {
+            return RxInternalNetworking.generateSimpleObservable(this);
+        } else if (this.getRequestType() == RequestType.MULTIPART) {
+            return RxInternalNetworking.generateMultipartObservable(this);
+        } else {
+            return null;
+        }
+    }
+
+    public <T> Single<T> getObjectSingle(Class<T> objectClass) {
+        return getObjectObservable(objectClass).toSingle();
+    }
+
+    public <T> Completable getObjectCompletable(Class<T> objectClass) {
+        return getObjectObservable(objectClass).toCompletable();
+    }
+
+    public <T> Observable<List<T>> getObjectListObservable(Class<T> objectClass) {
+        this.setType($Gson$Types.newParameterizedTypeWithOwner(null, List.class, objectClass));
+        this.setResponseAs(ResponseType.PARSED);
+        if (this.getRequestType() == RequestType.SIMPLE) {
+            return RxInternalNetworking.generateSimpleObservable(this);
+        } else if (this.getRequestType() == RequestType.MULTIPART) {
+            return RxInternalNetworking.generateMultipartObservable(this);
+        } else {
+            return null;
+        }
+    }
+
+    public <T> Single<List<T>> getObjectListSingle(Class<T> objectClass) {
+        return getObjectListObservable(objectClass).toSingle();
+    }
+
+    public <T> Completable getObjectListCompletable(Class<T> objectClass) {
+        return getObjectListObservable(objectClass).toCompletable();
     }
 
     public static class GetRequestBuilder extends ANRequest.GetRequestBuilder<GetRequestBuilder> {
@@ -130,6 +224,13 @@ public class RxANRequest extends ANRequest<RxANRequest> {
 
         public HeadRequestBuilder(String url) {
             super(url, Method.HEAD);
+        }
+    }
+
+    public static class OptionsRequestBuilder extends GetRequestBuilder {
+
+        public OptionsRequestBuilder(String url) {
+            super(url, Method.OPTIONS);
         }
     }
 
@@ -166,6 +267,13 @@ public class RxANRequest extends ANRequest<RxANRequest> {
 
         public PatchRequestBuilder(String url) {
             super(url, Method.PATCH);
+        }
+    }
+
+    public static class DynamicRequestBuilder extends PostRequestBuilder {
+
+        public DynamicRequestBuilder(String url, int method) {
+            super(url, method);
         }
     }
 

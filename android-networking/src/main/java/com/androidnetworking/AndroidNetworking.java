@@ -18,13 +18,14 @@
 package com.androidnetworking;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 
 import com.androidnetworking.common.ANConstants;
-import com.androidnetworking.common.ANLog;
 import com.androidnetworking.common.ANRequest;
 import com.androidnetworking.common.ConnectionClassManager;
 import com.androidnetworking.common.ConnectionQuality;
 import com.androidnetworking.core.Core;
+import com.androidnetworking.interceptors.HttpLoggingInterceptor.Level;
 import com.androidnetworking.interfaces.ConnectionQualityChangeListener;
 import com.androidnetworking.interfaces.Parser;
 import com.androidnetworking.internal.ANImageLoader;
@@ -84,6 +85,17 @@ public class AndroidNetworking {
     }
 
     /**
+     * Method to set decodeOptions
+     *
+     * @param decodeOptions The decode config for Bitmaps
+     */
+    public static void setBitmapDecodeOptions(BitmapFactory.Options decodeOptions) {
+        if (decodeOptions != null) {
+            ANImageLoader.getInstance().setBitmapDecodeOptions(decodeOptions);
+        }
+    }
+
+    /**
      * Method to set connectionQualityChangeListener
      *
      * @param connectionChangeListener The connectionQualityChangeListener
@@ -117,6 +129,16 @@ public class AndroidNetworking {
      */
     public static ANRequest.HeadRequestBuilder head(String url) {
         return new ANRequest.HeadRequestBuilder(url);
+    }
+
+    /**
+     * Method to make OPTIONS request
+     *
+     * @param url The url on which request is to be made
+     * @return The OptionsRequestBuilder
+     */
+    public static ANRequest.OptionsRequestBuilder options(String url) {
+        return new ANRequest.OptionsRequestBuilder(url);
     }
 
     /**
@@ -182,6 +204,17 @@ public class AndroidNetworking {
     }
 
     /**
+     * Method to make Dynamic request
+     *
+     * @param url    The url on which request is to be made
+     * @param method The HTTP METHOD for the request
+     * @return The DynamicRequestBuilder
+     */
+    public static ANRequest.DynamicRequestBuilder request(String url, int method) {
+        return new ANRequest.DynamicRequestBuilder(url, method);
+    }
+
+    /**
      * Method to cancel requests with the given tag
      *
      * @param tag The tag with which requests are to be cancelled
@@ -217,24 +250,16 @@ public class AndroidNetworking {
      * Method to enable logging
      */
     public static void enableLogging() {
-        ANLog.enableLogging();
+        enableLogging(Level.BASIC);
     }
 
     /**
      * Method to enable logging with tag
      *
-     * @param tag The tag for logging
+     * @param level The level for logging
      */
-    public static void enableLogging(String tag) {
-        ANLog.enableLogging();
-        ANLog.setTag(tag);
-    }
-
-    /**
-     * Method to disable logging
-     */
-    public static void disableLogging() {
-        ANLog.disableLogging();
+    public static void enableLogging(Level level) {
+        InternalNetworking.enableLogging(level);
     }
 
     /**
@@ -293,6 +318,16 @@ public class AndroidNetworking {
      */
     public static void setParserFactory(Parser.Factory parserFactory) {
         ParseUtil.setParserFactory(parserFactory);
+    }
+
+    /**
+     * Method to find if the request is running or not
+     *
+     * @param tag The tag with which request running status is to be checked
+     * @return The request is running or not
+     */
+    public static boolean isRequestRunning(Object tag) {
+        return ANRequestQueue.getInstance().isRequestRunning(tag);
     }
 
     /**

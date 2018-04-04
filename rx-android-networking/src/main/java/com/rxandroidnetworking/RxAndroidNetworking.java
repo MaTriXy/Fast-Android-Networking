@@ -24,7 +24,7 @@ package com.rxandroidnetworking;
 /**
  * RxAndroidNetworking entry point.
  * You must initialize this class before use. The simplest way is to just do
- * {#code RxAndroidNetworking.initialize(context)}.
+ * {#code AndroidNetworking.initialize(context)}.
  */
 public class RxAndroidNetworking {
 
@@ -52,6 +52,16 @@ public class RxAndroidNetworking {
      */
     public static RxANRequest.HeadRequestBuilder head(String url) {
         return new RxANRequest.HeadRequestBuilder(url);
+    }
+
+    /**
+     * Method to make OPTIONS request
+     *
+     * @param url The url on which request is to be made
+     * @return The OptionsRequestBuilder
+     */
+    public static RxANRequest.OptionsRequestBuilder options(String url) {
+        return new RxANRequest.OptionsRequestBuilder(url);
     }
 
     /**
@@ -114,5 +124,16 @@ public class RxAndroidNetworking {
      */
     public static RxANRequest.MultiPartBuilder upload(String url) {
         return new RxANRequest.MultiPartBuilder(url);
+    }
+
+    /**
+     * Method to make Dynamic request
+     *
+     * @param url    The url on which request is to be made
+     * @param method The HTTP METHOD for the request
+     * @return The DynamicRequestBuilder
+     */
+    public static RxANRequest.DynamicRequestBuilder request(String url, int method) {
+        return new RxANRequest.DynamicRequestBuilder(url, method);
     }
 }
