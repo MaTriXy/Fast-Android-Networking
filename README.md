@@ -2,15 +2,6 @@
 
 # Fast Android Networking Library
 
-[![Build Status](https://travis-ci.org/amitshekhariitbhu/Fast-Android-Networking.svg?branch=master)](https://travis-ci.org/amitshekhariitbhu/Fast-Android-Networking)
-[![Mindorks](https://img.shields.io/badge/mindorks-opensource-blue.svg)](https://mindorks.com/open-source-projects)
-[![Mindorks Community](https://img.shields.io/badge/join-community-blue.svg)](https://mindorks.com/join-community)
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Android%20Networking-blue.svg?style=flat)](http://android-arsenal.com/details/1/3695)
-[![API](https://img.shields.io/badge/API-9%2B-brightgreen.svg?style=flat)](https://android-arsenal.com/api?level=9)
-[![Download](https://api.bintray.com/packages/amitshekhariitbhu/maven/android-networking/images/download.svg) ](https://bintray.com/amitshekhariitbhu/maven/android-networking/_latestVersion)
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=102)](https://opensource.org/licenses/Apache-2.0)
-[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/amitshekhariitbhu/Fast-Android-Networking/blob/master/LICENSE)
-
 ### About Fast Android Networking Library
 
 Fast Android Networking Library is a powerful library for doing any type of networking in Android applications which is made on top of [OkHttp Networking Layer](http://square.github.io/okhttp/).
@@ -18,25 +9,29 @@ Fast Android Networking Library is a powerful library for doing any type of netw
 Fast Android Networking Library takes care of each and everything. So you don't have to do anything, just make request and listen for the response.
 
 ### Why use Fast Android Networking ?
-* Recent removal of HttpClient in Android Marshmallow(Android M) made other networking library obsolete.
-* No other single library do each and everything like making request, downloading any type of file, uploading file, loading
-  image from network in ImageView, etc. There are libraries but they are outdated.
-* No other library provided simple interface for doing all types of things in networking like setting priority, cancelling, etc.
-* As it uses [Okio](https://github.com/square/okio) , No more GC overhead in android application.
+* Recent removal of HttpClient in Android Marshmallow(Android M) made other networking libraries obsolete.
+* No other single library does each and everything like making request, downloading any type of file, uploading file, loading
+  image from network in ImageView, etc. There are some libraries but they are outdated.
+* No other library provides simple interface for doing all types of things in networking like setting priority, cancelling, etc.
+* As it uses [Okio](https://github.com/square/okio) , No more GC overhead in android applications.
   [Okio](https://github.com/square/okio) is made to handle GC overhead while allocating memory.
-  [Okio](https://github.com/square/okio) do some clever things to save CPU and memory.
-* As it uses [OkHttp](http://square.github.io/okhttp/) , most important it supports HTTP/2.  
+  [Okio](https://github.com/square/okio) does some clever things to save CPU and memory.
+* It uses [OkHttp](http://square.github.io/okhttp/) , more importantly it supports HTTP/2.  
 
+## About me
+
+Hi, I am Amit Shekhar, Co-Founder @ [Outcome School](https://outcomeschool.com) • IIT 2010-14 • I have taught and mentored many developers, and their efforts landed them high-paying tech jobs, helped many tech companies in solving their unique problems, and created many open-source libraries being used by top companies. I am passionate about sharing knowledge through open-source, blogs, and videos.
+
+You can connect with me on:
+
+- [Twitter](https://twitter.com/amitiitbhu)
+- [YouTube](https://www.youtube.com/@amitshekhar)
+- [LinkedIn](https://www.linkedin.com/in/amit-shekhar-iitbhu)
+- [GitHub](https://github.com/amitshekhariitbhu)
+
+## [Outcome School Blog](https://outcomeschool.com/blog) - High-quality content to learn Android concepts.
 
 ### RxJava2 Support, [check here](https://amitshekhariitbhu.github.io/Fast-Android-Networking/rxjava2_support.html).
-
-### RxJava2 + Fast Android Networking + Dagger2 with MVP Architecture Project, [Check here](https://github.com/MindorksOpenSource/android-mvp-architecture)
-
-### Another awesome library for debugging databases and shared preferences, [Check here](https://github.com/amitshekhariitbhu/Android-Debug-Database)
-
-### RxJava2 + Fast Android Networking + Dagger2 with MVVM Architecture Project, [Check here](https://github.com/MindorksOpenSource/android-mvvm-architecture)
-
-### PRDownloader library for downloading file with pause and resume support, [Check here](https://github.com/MindorksOpenSource/PRDownloader)
 
 ### Find this project useful ? :heart:
 * Support it by clicking the :star: button on the upper right of this page. :v:
@@ -53,10 +48,26 @@ Fast Android Networking Library supports Android 2.3 (Gingerbread) and later.
 
 ## Using Fast Android Networking Library in your application
 
-Add this in your build.gradle
+Add this in your `settings.gradle`:
 ```groovy
-compile 'com.amitshekhar.android:android-networking:1.0.1'
+maven { url 'https://jitpack.io' }
 ```
+
+If you are using `settings.gradle.kts`, add the following:
+```kotlin
+maven { setUrl("https://jitpack.io") }
+```
+
+Add this in your `build.gradle`
+```groovy
+implementation 'com.github.amitshekhariitbhu.Fast-Android-Networking:android-networking:1.0.4'
+```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:android-networking:1.0.4")
+```
+
 Do not forget to add internet permission in manifest if already not present
 ```xml
 <uses-permission android:name="android.permission.INTERNET" />
@@ -73,13 +84,46 @@ OkHttpClient okHttpClient = new OkHttpClient() .newBuilder()
                         .build();
 AndroidNetworking.initialize(getApplicationContext(),okHttpClient);                        
 ```
+
 Using the Fast Android Networking with Jackson Parser
+
+Add this in your `build.gradle`
 ```groovy
-compile 'com.amitshekhar.android:jackson-android-networking:1.0.1'
+implementation 'com.github.amitshekhariitbhu.Fast-Android-Networking:jackson-android-networking:1.0.4'
 ```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:jackson-android-networking:1.0.4")
+```
+
 ```java
 // Then set the JacksonParserFactory like below
 AndroidNetworking.setParserFactory(new JacksonParserFactory());
+```
+
+Using the Fast Android Networking with RxJava2
+
+Add this in your `build.gradle`
+```groovy
+implementation 'com.github.amitshekhariitbhu.Fast-Android-Networking:rx2-android-networking:1.0.4'
+```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:rx2-android-networking:1.0.4")
+```
+
+Using the Fast Android Networking with RxJava
+
+Add this in your `build.gradle`
+```groovy
+implementation 'com.github.amitshekhariitbhu.Fast-Android-Networking:rx-android-networking:1.0.4'
+```
+
+If you are using `build.gradle.kts`, add the following:
+```kotlin
+implementation("com.github.amitshekhariitbhu.Fast-Android-Networking:rx-android-networking:1.0.4")
 ```
 
 ### Making a GET Request
@@ -610,9 +654,9 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 * Single library for all type of networking.
 * Supports RxJava, RxJava2 -> [Check here](https://amitshekhariitbhu.github.io/Fast-Android-Networking/rxjava2_support.html)
 * Current bandwidth and connection quality can be obtained to decide logic of code.
-* Executor can be passed to any request to get response in another thread.
+* Executor can be passed to any request to get the response in another thread.
 * Complete analytics of any request can be obtained.
-* All types of customization is possible.
+* All types of customization are possible.
 * Immediate Request really is immediate now.
 * Prefetching of any request can be done so that it gives instant data when required from the cache.
 * Proper request canceling.
@@ -630,8 +674,6 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 * [Volley](https://android.googlesource.com/platform/frameworks/volley/) - As Fast Android Networking uses ImageLoader that is developed by [Volley](https://android.googlesource.com/platform/frameworks/volley/).  
 * [Prashant Gupta](https://github.com/PrashantGupta17) - For RxJava, RxJava2 Support - [RxJava Support](https://github.com/amitshekhariitbhu/Fast-Android-Networking/wiki/Using-Fast-Android-Networking-Library-With-RxJava)
 
-### [Check out Mindorks awesome open source projects here](https://mindorks.com/open-source-projects)
-
 ### Contact - Let's become friend
 - [Twitter](https://twitter.com/amitiitbhu)
 - [Github](https://github.com/amitshekhariitbhu)
@@ -640,8 +682,7 @@ As it uses [OkHttp](http://square.github.io/okhttp/) as a networking layer, it s
 
 ### License
 ```
-   Copyright (C) 2016 Amit Shekhar
-   Copyright (C) 2011 Android Open Source Project
+   Copyright (C) 2024 Amit Shekhar
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
